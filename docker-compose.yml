@@ -1,0 +1,27 @@
+version: '3.3'
+services:
+  db:
+    image: postgres:13-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=my_first_application
+      - POSTGRES_PASSWORD=my_first_application
+      - POSTGRES_DB=my_first_db
+    ports:
+      - 5432:5432
+  api:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    command: uvicorn project.main:app --host 0.0.0.0 --port 8000 --reload 
+    volumes:
+      - ./app/:/usr/src/app
+    ports:
+      - 8000:8000
+    env_file:
+      - ./.env
+    depends_on:
+      - db
+volumes:
+  postgres_data:
